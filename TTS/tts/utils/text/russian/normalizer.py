@@ -4,13 +4,14 @@ import re
 import torch
 from string import printable, punctuation
 from tqdm import tqdm
+from pathlib import Path
 import warnings
 
-
+FILE = Path(__file__).resolve()
 class Normalizer:
     def __init__(self,
                  device='cpu',
-                 jit_model='jit_s2s.pt'):
+                 jit_model=FILE.parents[0] / 'jit_s2s.pt'):
         super(Normalizer, self).__init__()
 
         self.device = torch.device(device)
