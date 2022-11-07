@@ -5,7 +5,6 @@ from pathlib import Path
 from trainer import Trainer, TrainerArgs
 
 FILE = Path(__file__).resolve()
-print(list(FILE.parents))
 ROOT = FILE.parents[3] #root directory
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))  # add ROOT to PATH
@@ -51,7 +50,7 @@ config = VitsConfig(
     run_eval=True,
     test_delay_epochs=-1,
     epochs=1000,
-    text_cleaner="russian_cleaners",
+    text_cleaner="multilingual_cleaners",
     use_phonemes=False,
     phoneme_language="ru-RU",
     phoneme_cache_path=os.path.join(output_path, "phoneme_cache"),
