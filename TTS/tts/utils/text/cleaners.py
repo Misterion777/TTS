@@ -11,6 +11,7 @@ from .english.abbreviations import abbreviations_en
 from .english.number_norm import normalize_numbers as en_normalize_numbers
 from .english.time_norm import expand_time_english
 from .french.abbreviations import abbreviations_fr
+from .russian.normalizer import Normalizer
 
 # Regular expression matching whitespace:
 _whitespace_re = re.compile(r"\s+")
@@ -143,3 +144,11 @@ def multilingual_cleaners(text):
     text = remove_aux_symbols(text)
     text = collapse_whitespace(text)
     return text
+
+rus_norm = Normalizer()
+def russian_cleaners(text):
+    """Pipeline for Russian text: https://github.com/snakers4/russian_stt_text_normalization """
+    text = lowercase(text)
+    text = rus_norm.norm_text(text)
+    return text
+
