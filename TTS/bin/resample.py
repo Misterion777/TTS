@@ -82,8 +82,11 @@ if __name__ == "__main__":
     if args.file_out_ext is None: 
         args.file_out_ext = args.file_ext
     if args.output_dir:
-        print("Recursively copying the input folder...")
-        copy_tree(args.input_dir, args.output_dir)
+        if os.path.exists(args.output_dir):
+            print("Recursively copying the input folder...")
+            copy_tree(args.input_dir, args.output_dir)
+        else:
+            print("Output path already exists!")
         args.input_dir = args.output_dir
 
     print("Resampling the audio files...")
