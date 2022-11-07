@@ -1,7 +1,13 @@
 import os
-import pandas as pd
+import sys
+from pathlib import Path
 
 from trainer import Trainer, TrainerArgs
+
+FILE = Path(__file__).resolve()
+ROOT = FILE.parents[1] #root directory
+if str(ROOT) not in sys.path:
+    sys.path.append(str(ROOT))  # add ROOT to PATH
 
 from TTS.tts.configs.shared_configs import BaseDatasetConfig
 from TTS.tts.configs.vits_config import VitsConfig
