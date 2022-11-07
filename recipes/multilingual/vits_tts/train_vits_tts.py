@@ -92,7 +92,7 @@ config = VitsConfig(
 )
 
 # force the convertion of the custom characters to a config attribute
-# config.from_dict(config.to_dict())
+config.from_dict(config.to_dict())
 
 # init audio processor
 ap = AudioProcessor(**config.audio.to_dict())
