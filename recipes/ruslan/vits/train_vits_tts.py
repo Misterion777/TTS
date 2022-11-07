@@ -19,7 +19,7 @@ ruslan_path = "RUSLAN"
 dataset_config = BaseDatasetConfig(formatter="ruslan", meta_file_train="metadata_RUSLAN_22200.csv", path=ruslan_path, language="ru-RU")
 
 audio_config = VitsAudioConfig(
-    sample_rate=22050,
+    sample_rate=44100,
     win_length=1024,
     hop_length=256,
     num_mels=80,
