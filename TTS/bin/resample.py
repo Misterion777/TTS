@@ -11,9 +11,10 @@ from tqdm import tqdm
 
 
 def resample_file(func_args):
-    filename, output_sr = func_args
+    filename, output_sr,output_ext,output_dir = func_args
     y, sr = librosa.load(filename, sr=output_sr)
-    sf.write(filename, y, sr)
+    filename = os.path.splitext(filename)[0] + f".{output_ext}"
+    sf.write(os.path.join(output_dir,filename), y, sr)
 
 
 if __name__ == "__main__":
@@ -65,20 +66,28 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
+        "--file_out_ext",
+        type=str,
+        default="wav",
+        required=False,
+        help="Extension of the audio files after resample",
+    )
+
+    parser.add_argument(
         "--n_jobs", type=int, default=None, help="Number of threads to use, by default it uses all cores"
     )
 
     args = parser.parse_args()
 
-    if args.output_dir:
-        print("Recursively copying the input folder...")
-        copy_tree(args.input_dir, args.output_dir)
-        args.input_dir = args.output_dir
+    # if args.output_dir:
+    #     print("Recursively copying the input folder...")
+    #     copy_tree(args.input_dir, args.output_dir)
+    #     args.input_dir = args.output_dir
 
     print("Resampling the audio files...")
     audio_files = glob.glob(os.path.join(args.input_dir, f"**/*.{args.file_ext}"), recursive=True)
     print(f"Found {len(audio_files)} files...")
-    audio_files = list(zip(audio_files, len(audio_files) * [args.output_sr]))
+    audio_files = list(zip(audio_files, len(audio_files) * [args.output_sr],len(audio_files) * [args.file_out_ext],len(audio_files) * [args.output_dir]))
     with Pool(processes=args.n_jobs) as p:
         with tqdm(total=len(audio_files)) as pbar:
             for i, _ in enumerate(p.imap_unordered(resample_file, audio_files)):
