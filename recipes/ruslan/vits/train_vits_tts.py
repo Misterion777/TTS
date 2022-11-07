@@ -67,8 +67,8 @@ config = VitsConfig(
         eos="<EOS>",
         bos="<BOS>",
         blank="<BLNK>",
-        characters="!'(),-.:;?абвгдежзийклмнопрстуфхцчшщъыьэюяё ‘’‚“`”„",
-        punctuations="!'(),-.:;? ",
+        characters="!'(),-–.:;?абвгдежзийклмнопрстуфхцчшщъыьэюяё ‘’‚“`”„",
+        punctuations="!'(),–-.:;? ",
         phonemes=None,
     ),
     test_sentences=[
