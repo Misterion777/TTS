@@ -5,7 +5,8 @@ from pathlib import Path
 from trainer import Trainer, TrainerArgs
 
 FILE = Path(__file__).resolve()
-ROOT = FILE.parents[1] #root directory
+print(list(FILE.parents))
+ROOT = FILE.parents[3] #root directory
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))  # add ROOT to PATH
 
