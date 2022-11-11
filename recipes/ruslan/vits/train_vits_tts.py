@@ -48,14 +48,14 @@ if __name__ == "__main__":
         audio=audio_config,
         run_name="vits_ruslan",
         use_speaker_embedding=True,
-        batch_size=32,
-        eval_batch_size=16,
+        batch_size=16,
+        eval_batch_size=8,
         batch_group_size=0,
         num_loader_workers=4,
         num_eval_loader_workers=4,
         run_eval=True,
         test_delay_epochs=-1,
-        epochs=1000,
+        epochs=100,
         text_cleaner="multilingual_cleaners",
         use_phonemes=False,
         phoneme_language="ru-RU",
@@ -64,7 +64,7 @@ if __name__ == "__main__":
         print_step=25,
         print_eval=False,
         mixed_precision=True,
-        max_text_len=325,  # change this if you have a larger VRAM than 16GB
+        max_text_len=256,  # change this if you have a larger VRAM than 16GB
         output_path=output_path,
         datasets=dataset_config,
         characters=CharactersConfig(
