@@ -1,6 +1,7 @@
 import os
 import sys
 import argparse
+import pandas as pd
 from pathlib import Path
 
 from trainer import Trainer, TrainerArgs
@@ -27,16 +28,29 @@ if __name__ == "__main__":
 
     output_path = os.path.dirname(os.path.abspath(__file__))
 
+    restore_path = "models/tts_models--en--ljspeech--vits/model_file.pth"
+
     if args.continue_path:
         config = load_config(os.path.join(args.continue_path, "config.json"))
+        restore_path = ""
     else:
 
         ruslan_path = "RUSLAN"
+        ruslan_config = BaseDatasetConfig(formatter="ruslan", meta_file_train="metadata_RUSLAN_22200.csv", path=ruslan_path, language="ru-RU")
 
-        dataset_config = BaseDatasetConfig(formatter="ruslan", meta_file_train="metadata_RUSLAN_22200.csv", path=ruslan_path, language="ru-RU")
+        def pastuh_formatter(root_path, meta_file, **kwargs):
+            txt_file = os.path.join(root_path, meta_file)
+            df = pd.read_csv(txt_file)
+            df["audio_file"] = df["audio_file"].apply(lambda x: f"{root_path}/clips_22k/{x}")
+            speaker_name = "ruslan"
+            df["speaker_name"] = speaker_name
+            return df.to_dict(orient="records")
+
+        pastuh_path = "pastuh/new"
+        pastuh_config = BaseDatasetConfig(formatter=pastuh_formatter, meta_file_train="metadata.csv", path=pastuh_path, language="ru-RU")
 
         audio_config = VitsAudioConfig(
-            sample_rate=44100,
+            sample_rate=22050,
             win_length=1024,
             hop_length=256,
             num_mels=80,
@@ -44,10 +58,15 @@ if __name__ == "__main__":
             mel_fmax=None,
         )
 
-        config = VitsConfig(        
+        vitsArgs = VitsArgs(
+            use_speaker_embedding=True,
+        )
+
+        config = VitsConfig(  
+            model_args=vitsArgs,      
             audio=audio_config,
-            run_name="vits_ruslan",        
-            batch_size=16,
+            run_name="vits_ruslan_pastuh",        
+            batch_size=24,
             eval_batch_size=8,
             batch_group_size=0,
             num_loader_workers=4,
@@ -65,7 +84,7 @@ if __name__ == "__main__":
             mixed_precision=True,
             max_text_len=256,  # change this if you have a larger VRAM than 16GB
             output_path=output_path,
-            datasets=[dataset_config],
+            datasets=[ruslan_config,pastuh_config],
             characters=CharactersConfig(
                 characters_class="TTS.tts.models.vits.VitsCharacters",
                 pad="<PAD>",
@@ -77,7 +96,9 @@ if __name__ == "__main__":
                 phonemes=None,
             ),
             test_sentences=[
-                ["Я думаю, что этот стартап действительно удивительный."],
+                ["Я думаю, что этот стартап действительно удивительный.", "pastuh", None, "ru_RU"],
+                ["Расстреливать нужно таких писателей!", "pastuh", None, "ru_RU"],
+                ["Скиллово проведи её до дому!", "pastuh", None, "ru_RU"],
             ],
         )
 
@@ -100,11 +121,18 @@ if __name__ == "__main__":
     # config is updated with the default characters if not defined in the config.
     tokenizer, config = TTSTokenizer.init_from_config(config)
 
-    # init model
-    model = Vits(config, ap, tokenizer, speaker_manager=None)
+    # init speaker manager for multi-speaker training
+    # it maps speaker-id to speaker-name in the model and data-loader
+    speaker_manager = SpeakerManager()
+    speaker_manager.set_ids_from_data(train_samples + eval_samples, parse_key="speaker_name")
+    config.model_args.num_speakers = speaker_manager.num_speakers
 
+    # init model
+    model = Vits(config, ap, tokenizer, speaker_manager=speaker_manager)
+
+    train_args = TrainerArgs(continue_path = args.continue_path,restore_path=restore_path)
     # init the trainer and 🚀
     trainer = Trainer(
-        TrainerArgs(args.continue_path), config, output_path, model=model, train_samples=train_samples, eval_samples=eval_samples
+        train_args, config, output_path, model=model, train_samples=train_samples, eval_samples=eval_samples
     )
     trainer.fit()
