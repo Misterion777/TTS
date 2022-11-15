@@ -236,6 +236,7 @@ def pastuh(root_path, meta_file, **kwargs):
     df["audio_file"] = df["audio_file"].apply(lambda x: f"{root_path}/clips_22k/{x}")
     speaker_name = "pastuh"
     df["speaker_name"] = speaker_name
+    df["root_path"] = root_path
     return df.to_dict(orient="records")
 
 
