@@ -230,6 +230,14 @@ def ruslan(root_path, meta_file, **kwargs):  # pylint: disable=unused-argument
             items.append({"text": text, "audio_file": wav_file, "speaker_name": speaker_name, "root_path": root_path})
     return items
 
+def pastuh(root_path, meta_file, **kwargs):
+    txt_file = os.path.join(root_path, meta_file)
+    df = pd.read_csv(txt_file)
+    df["audio_file"] = df["audio_file"].apply(lambda x: f"{root_path}/clips_22k/{x}")
+    speaker_name = "pastuh"
+    df["speaker_name"] = speaker_name
+    return df.to_dict(orient="records")
+
 
 def css10(root_path, meta_file, **kwargs):  # pylint: disable=unused-argument
     """Normalizes the CSS10 dataset file to TTS format"""

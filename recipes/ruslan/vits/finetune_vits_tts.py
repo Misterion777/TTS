@@ -38,16 +38,8 @@ if __name__ == "__main__":
         ruslan_path = "data/RUSLAN"
         ruslan_config = BaseDatasetConfig(formatter="ruslan", meta_file_train="metadata_RUSLAN_22200.csv", path=ruslan_path, language="ru-RU")
 
-        def pastuh_formatter(root_path, meta_file, **kwargs):
-            txt_file = os.path.join(root_path, meta_file)
-            df = pd.read_csv(txt_file)
-            df["audio_file"] = df["audio_file"].apply(lambda x: f"{root_path}/clips_22k/{x}")
-            speaker_name = "ruslan"
-            df["speaker_name"] = speaker_name
-            return df.to_dict(orient="records")
-
         pastuh_path = "data/PASTUH"
-        pastuh_config = BaseDatasetConfig(formatter=pastuh_formatter, meta_file_train="metadata.csv", path=pastuh_path, language="ru-RU")
+        pastuh_config = BaseDatasetConfig(formatter="pastuh", meta_file_train="metadata.csv", path=pastuh_path, language="ru-RU")
 
         audio_config = VitsAudioConfig(
             sample_rate=22050,
