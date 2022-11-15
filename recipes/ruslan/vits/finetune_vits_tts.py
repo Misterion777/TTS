@@ -35,7 +35,7 @@ if __name__ == "__main__":
         restore_path = ""
     else:
 
-        ruslan_path = "RUSLAN"
+        ruslan_path = "data/RUSLAN"
         ruslan_config = BaseDatasetConfig(formatter="ruslan", meta_file_train="metadata_RUSLAN_22200.csv", path=ruslan_path, language="ru-RU")
 
         def pastuh_formatter(root_path, meta_file, **kwargs):
@@ -46,7 +46,7 @@ if __name__ == "__main__":
             df["speaker_name"] = speaker_name
             return df.to_dict(orient="records")
 
-        pastuh_path = "pastuh/new"
+        pastuh_path = "data/PASTUH"
         pastuh_config = BaseDatasetConfig(formatter=pastuh_formatter, meta_file_train="metadata.csv", path=pastuh_path, language="ru-RU")
 
         audio_config = VitsAudioConfig(
